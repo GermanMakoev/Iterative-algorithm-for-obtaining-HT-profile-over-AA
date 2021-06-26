@@ -1,12 +1,12 @@
 % загрузка магнитного пол€ (функци€ mfoLoadField заменила ранее используюмую iouLoadField)
-mfoData = mfoLoadField('C:\Users\Alan Makoev\Desktop\Matlab Ч 2\SDO\12470_hmi.M_720s.20151218_082209.W85N13CR.CEA.NAS_1000_sst.sav'); % for az=+12, +10
+mfoData = mfoLoadField('SDO\12470_hmi.M_720s.20151218_082209.W85N13CR.CEA.NAS_1000_sst.sav'); % for az=+12, +10
 if isempty(mfoData)
     return
 end
 
 % загрузка данных –ј“јЌ (см. описание структуры файлов). Ёта функци€ берет
 % на себ€ чтение и загрузку данных в структуру ratan
-ratan = iouLoadRATANData('C:\Users\Alan Makoev\Desktop\Matlab Ч 2\RATAN\RATAN_AR12470_20151218_082624_az+10_SPECTRA__flocculae-included_stille_appr.dat');
+ratan = iouLoadRATANData('RATAN\RATAN_AR12470_20151218_082624_az+10_SPECTRA__flocculae-included_stille_appr.dat');
 
 % в данном файле спектры в дев€ти точках скана, средн€€ точка (5) соответствует
 % примерно максимуму пол€, берем ее

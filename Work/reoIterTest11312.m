@@ -1,14 +1,14 @@
 function reoIterTest11312
 
 % загрузка магнитного поля (функция mfoLoadField заменила ранее используюмую iouLoadField)
-mfoData = mfoLoadField('C:\Users\Alan Makoev\Desktop\Matlab — 3\SDO\11312_hmi.M_720s.20111010_085818.W121N24CR.CEA.NAS_750_sst.sav'); % for az=+12, +10
+mfoData = mfoLoadField('SDO\11312_hmi.M_720s.20111010_085818.W121N24CR.CEA.NAS_750_sst.sav'); % for az=+12, +10
 if isempty(mfoData)
     return
 end
 
 % загрузка данных РАТАН (см. описание структуры файлов). Эта функция берет
 % на себя чтение и загрузку данных в структуру ratan
-ratan = iouLoadRATANData('C:\Users\Alan Makoev\Desktop\Matlab — 3\RATAN\RATAN_AR11312_20111010_090044_az0_SPECTRA__shablon.dat');
+ratan = iouLoadRATANData('RATAN\RATAN_AR11312_20111010_090044_az0_SPECTRA__shablon.dat');
 
 % в данном файле спектры в девяти точках скана, средняя точка (5) соответствует
 % примерно максимуму поля, берем ее

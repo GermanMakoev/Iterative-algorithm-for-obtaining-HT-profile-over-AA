@@ -1,6 +1,6 @@
-function reoIterTest12470
+function reoIterTest12470Previous
 
-mfoData = iouLoadField('C:\Users\Alan Makoev\Desktop\Matlab\12470_hmi.M_720s.20151218_085809.W84N12CR.CEA.NAS_sst_trim.mat'); % 50:240, 100:280
+mfoData = iouLoadField('Matlab\12470_hmi.M_720s.20151218_085809.W84N12CR.CEA.NAS_sst_trim.mat'); % 50:240, 100:280
 %mfoData = iouLoadField('s:\Projects\MLM\12470_hmi.M_720s.20151218_085809.W84N12CR.CEA.NAS_sst_trim.mat'); % 50:240, 100:280
 if isempty(mfoData)
     return

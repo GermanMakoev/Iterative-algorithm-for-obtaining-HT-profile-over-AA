@@ -1,6 +1,6 @@
 function reoIterTest11312vPrev
 
-mfoData = iouLoadField('C:\Users\Alan Makoev\Desktop\Matlab — 1\Data\11312_hmi.M_720s.20111010_085818.W121N23CR.CEA.NAS_sst_trim.mat'); % 15:160, 25:150
+mfoData = iouLoadField('Data\11312_hmi.M_720s.20111010_085818.W121N23CR.CEA.NAS_sst_trim.mat'); % 15:160, 25:150
 %mfoData = iouLoadField('s:\Projects\MLM\11312_hmi.M_720s.20111010_085818.W121N23CR.CEA.NAS_sst_trim.mat'); % 15:160, 25:150
 if isempty(mfoData)
     return

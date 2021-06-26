@@ -1,6 +1,6 @@
 function reoIterTest3Points2Regions
 
-mfoData = iouLoadField('C:\Users\Alan Makoev\Desktop\Matlab — 1\Data\dip_140_05_16e8.mat');
+mfoData = iouLoadField('Data\dip_140_05_16e8.mat');
 %mfoData = iouLoadField('s:\UData\Data\Dipole\dip_140_05_16e8.mat');
 if isempty(mfoData)
     return
