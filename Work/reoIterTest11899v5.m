@@ -1,42 +1,34 @@
-function reoIterTest12794v4
+function reoIterTest11899v5
 
 % загрузка магнитного поля (функция mfoLoadField заменила ранее используемую iouLoadField)
-mfoData = mfoLoadField('SDO\12794_hmi.M_720s.20201228_091030.E16S16CR.CEA.NAS_750_sst.sav'); % for az=+12, +10
+mfoData = mfoLoadField('SDO\11899_hmi.M_720s.20131119_085812.W40N6CR.CEA.NAS_350_sst.sav'); % for az=+12, +10
 if isempty(mfoData)
     return
 end
 
 % загрузка данных РАТАН (см. описание структуры файлов). Эта функция берет
 % на себя чтение и загрузку данных в структуру ratan
-ratan = iouLoadRATANData('RATAN\RATAN_AR12794_20201228_091520_az0_SPECTRA__stille_appr.dat');
+ratan = iouLoadRATANData('RATAN\RATAN_AR11899_20131119_085901_az0_SPECTRA__stille_appr.dat');
 
 % в данном файле спектры в девяти точках скана, средняя точка (5) соответствует
 % примерно максимуму поля, берем ее
-select = [4,5,6;4,5,6];
+select = [2,5,8;2,5,8];
 
 % выделяем частоты и спектры
 freqs = ratan.freqs;
 Robs = zeros(length(freqs),3);
 Lobs = zeros(length(freqs),3);
-%Robsappr = zeros(length(freqs),3);
-%Lobsappr = zeros(length(freqs),3);
+Robsappr = zeros(length(freqs),3);
+Lobsappr = zeros(length(freqs),3);
 posR = zeros(length(freqs),3);
 posL = zeros(length(freqs),3);
 Points = zeros(2,length(select)); 
 for l=1:3
-%Robs(:,l) = ratan.left(select(l), :);
-%Lobs(:,l) = ratan.right(select(l), :);
 Robs(:,l) = ratan.left(select(l), 1:length(freqs));
 Lobs(:,l) = ratan.right(select(l), 1:length(freqs));
 end 
 % можно работать и с исходными данными, но, чтобы убрать шум, можно
 % попробовать аппроксимировать спектры подходящей функцией.
-%for l=1:3
-%Robsappr(:,l) = asmAsym2SigOpt(ratan.freqs*1e-9, Robs(:,l)');
-%Lobsappr(:,l) = asmAsym2SigOpt(ratan.freqs*1e-9, Lobs(:,l)');
-% для уверенности в том, что аппроксимация приемлема, пожно построить,
-% скажем, Robs и Robsappr на одном графике
-%end 
 
 % позиционный угол РАТАН уже содержится в данных, поэтому просто
 % перетаскиваем его в mfoData
@@ -61,7 +53,7 @@ end
 step=[2 2];
 [M, base, Bc] = reoSetField(hLib, mfoData, step);
 %Mask = mfoData.mask-5;
-load('Mask12794.mat','Mask');
+load('Mask11899.mat','Mask');
 [diagrH, diagrV] =  mfoCreateRATANDiagrams(freqs, M, step, base, 3);
 
 % данные РАТАН содержат позицию точек скана (в угл. сек.), поэтому позицию
@@ -79,22 +71,13 @@ end
 % можно пробовать строить маски для тени/полутени/флоккула, это тоже на
 % следующем этапе.
 
-freqsR = freqs(1:40);
-freqsL = freqs(1:40);
-Robs(41:end,:) = [];
-Lobs(41:end,:) = [];
-
 %-----------------------------------------------------------------------
 Ht1 = [0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 10 15 20 25]*1e8;
 Ht2 = [1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5.2 5.7 6.5 10 15 20 25 30]*1e8;
 %Ht1 = [1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 8 10  12 15 20 25]*1e8;
 %Ht2 = [1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5.2 5.7 6.5 10 12 15 17 20 25 30]*1e8;
 Hc = (Ht1+Ht2)/2;
-%Tc = 1e6*ones(2, length(Hc));
-load('T_final.mat','Tcalc');
-Tc = Tcalc;
-Tc(:,1:2) = [];
-Tc(1,1:2) = 6000;
+Tc = 1e6*ones(2, length(Hc));
 Tb = [6000, 6000; 6000, 6000];
 
 %Hb = [1.2e8, 1.3e8];
@@ -103,9 +86,9 @@ Hb = [0.8e8, 0.9e8];
 NT = 1e16;
 
 param = reoGetParam;
-param.wTemp = 1000;
-param.rescntmax = 1;
-%param.rescntmax = 30;
+param.wTemp = 500;
+param.wL = 0.2;
+param.rescntmax = 30;
 
 %Тормозное излучение
 load('Fontenla2009.mat','f2009');
@@ -122,8 +105,8 @@ for k = 1:length(freqs)
         [depthRight, pFRight, pTauRight, pHLRight, pFLRight, psLRight, ...
             depthLeft, pFLeft, pTauLeft, pHLLeft, pFLLeft, psLLeft] = ...
                      reoCalculate(hLib, mfoData, HB, TB, DB, M, freqs(k), param.harms, param.pTauL, param.mode, param.c, param.b);
-            pFRightW(Mask == 5 | Mask ==4) = pFRight(Mask == 5 | Mask ==4);
-            pFLeftW(Mask == 5 | Mask ==4) = pFLeft(Mask == 5 | Mask ==4);    
+            pFRightW(Mask == 5) = pFRight(Mask == 5);
+            pFLeftW(Mask == 5) = pFLeft(Mask == 5);    
         scanRB = gstMapConv(pFRightW, diagrH(k,:), diagrV(k,:), step);
         scanLB = gstMapConv(pFLeftW, diagrH(k,:), diagrV(k,:), step);
         RB(k,l) = scanRB(Points(1,l));
@@ -131,10 +114,51 @@ for k = 1:length(freqs)
 end
 end
 
-RB(41:end,:) = [];
-LB(41:end,:) = [];
-Robs = Robs - RB;
-Lobs = Lobs - LB;
+for l=1:3
+Robsappr(:,l) = asmAsym2SigOpt(ratan.freqs*1e-9, Robs(:,l)');
+Lobsappr(:,l) = asmAsym2SigOpt(ratan.freqs*1e-9, Lobs(:,l)');
+% для уверенности в том, что аппроксимация приемлема, пожно построить,
+% скажем, Robs и Robsappr на одном графике
+end 
+
+freqsR = freqs;
+freqsL = freqs;
+%freqs(38) = [];
+%freqs(21) = [];
+%freqs(12) = [];
+%Robs(38,:) = [];
+%Robs(21,:) = [];
+%Robs(12,:) = [];
+%Lobs(38,:) = [];
+%Lobs(21,:) = [];
+%Lobs(12,:) = [];
+%RB(38,:) = [];
+%RB(21,:) = [];
+%RB(12,:) = [];
+%LB(38,:) = [];
+%LB(21,:) = [];
+%LB(12,:) = [];
+%freqsR = freqs(1:51);
+%freqsL = freqs(1:51);
+%Robsappr(41:end,:) = [];
+%Lobsappr(41:end,:) = [];
+%Robs(52:end,:) = [];
+%Lobs(63:end,:) = [];
+%Lobs(52:end,:) = [];
+%RB(52:end,:) = [];
+%LB(63:end,:) = [];
+%LB(52:end,:) = [];
+
+%freqs(1:6) = [];
+%freqs(1:6) = [];
+%Robsappr(41:end,:) = [];
+%Lobsappr(41:end,:) = [];
+%Robs(1:6,:) = [];
+%Lobs(63:end,:) = [];
+%Lobs(1:6,:) = [];
+%RB(1:6,:) = [];
+%LB(63:end,:) = [];
+%LB(1:6,:) = [];
 
 QT = 1;
 freefree = 0;
@@ -147,7 +171,7 @@ end
 Mask = Mask-5;
 Mask(Mask<0)=0;
 
-reoIterationCore3Points2RegionsV2(hLib, mfoData, M, freqs, freqsR, freqsL , Robs, Lobs, [], [], Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, Mask, param, diagrH, diagrV, step, Points);
+reoIterationCore3Points2RegionsV2(hLib, mfoData, M, freqs, freqsR, freqsL , Robs, Lobs, RB, LB, [], [], Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, Mask, param, diagrH, diagrV, step, Points);
 utilsFreeLibrary(hLib);
 end
 

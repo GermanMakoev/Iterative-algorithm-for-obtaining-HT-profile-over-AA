@@ -1,4 +1,4 @@
-function reoIterationCore3Points2RegionsV2(hLib, mfoData, Mmap, freqs, Robs, Lobs, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, Mask, param, diagrH, diagrV, gridstep, Points)
+function reoIterationCore3Points2RegionsV2(hLib, mfoData, Mmap, freqs, freqsR, freqsL, Robs, Lobs, RB, LB, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, Mask, param, diagrH, diagrV, gridstep, Points)
 
 nNT = 1;
 NT = NTv(nNT);
@@ -11,31 +11,31 @@ outRes = zeros(length(NTv));
 [~, hAxes] = ssuCreateMultiAxesFig(3, 3, '', false, false);
 hT0_1 = [];
 hT0_2 = [];
-title(hAxes(1,1),'Температурно-высотный профиль полутени');
+title(hAxes(1,1),'ТВП полутени');
 xlabel(hAxes(1,1),'Высота, см');
 ylabel(hAxes(1,1),'Температура, К');
-title(hAxes(1,2),'Температурно-высотный профиль тени');
+title(hAxes(1,2),'ТВП тени');
 xlabel(hAxes(1,2),'Высота, см');
 ylabel(hAxes(1,2),'Температура, К');
-title(hAxes(1,3),'Зависимость невязки от числа итераций');
+title(hAxes(1,3),'Невязка (число итераций)');
 xlabel(hAxes(1,3),'Число итераций');
 ylabel(hAxes(1,3),'Невязка');
-title(hAxes(2,1),'Спектры, правая поляризация, 1-я точка');
+title(hAxes(2,1),'Спектры, ПП, 1-я точка');
 xlabel(hAxes(2,1),'Частота, Гц');
 ylabel(hAxes(2,1),'Поток, с.е.п./угл.сек.');
-title(hAxes(2,2),'Спектры, правая поляризация, 2-я точка');
+title(hAxes(2,2),'Спектры, ПП, 2-я точка');
 xlabel(hAxes(2,2),'Частота, Гц');
 ylabel(hAxes(2,2),'Поток, с.е.п./угл.сек.');
-title(hAxes(2,3),'Спектры, правая поляризация, 3-я точка');
+title(hAxes(2,3),'Спектры, ПП, 3-я точка');
 xlabel(hAxes(2,3),'Частота, Гц');
 ylabel(hAxes(2,3),'Поток, с.е.п./угл.сек.');
-title(hAxes(3,1),'Спектры, левая поляризация, 1-я точка');
+title(hAxes(3,1),'Спектры, ЛП, 1-я точка');
 xlabel(hAxes(3,1),'Частота, Гц');
 ylabel(hAxes(3,1),'Поток, с.е.п./угл.сек.');
-title(hAxes(3,2),'Спектры, левая поляризация, 2-я точка');
+title(hAxes(3,2),'Спектры, ЛП, 2-я точка');
 xlabel(hAxes(3,2),'Частота, Гц');
 ylabel(hAxes(3,2),'Поток, с.е.п./угл.сек.');
-title(hAxes(3,3),'Спектры, левая поляризация, 3-я точка');
+title(hAxes(3,3),'Спектры, ЛП, 3-я точка');
 xlabel(hAxes(3,3),'Частота, Гц');
 ylabel(hAxes(3,3),'Поток, с.е.п./угл.сек.');
 %title(hAxes(1,1),'Height-temperature profile');
@@ -65,17 +65,17 @@ set(hAxes(1,3), 'YScale', 'log')
 set(hAxes,'Fontsize',16)
 hTc_1 = [];
 hTc_2 = [];
-hRs0_1 = plot(hAxes(2,1), freqs, Robs(:,1), 'Color', 'g');
+hRs0_1 = plot(hAxes(2,1), freqsR, Robs(:,1), 'Color', 'g');
 hRsc_1 = [];
-hLs0_1 = plot(hAxes(3,1), freqs, Lobs(:,1), 'Color', 'g');
+hLs0_1 = plot(hAxes(3,1), freqsL, Lobs(:,1), 'Color', 'g');
 hLsc_1 = [];
-hRs0_2 = plot(hAxes(2,2), freqs, Robs(:,2), 'Color', 'g');
+hRs0_2 = plot(hAxes(2,2), freqsR, Robs(:,2), 'Color', 'g');
 hRsc_2 = [];
-hLs0_2 = plot(hAxes(3,2), freqs, Lobs(:,2), 'Color', 'g');
+hLs0_2 = plot(hAxes(3,2), freqsL, Lobs(:,2), 'Color', 'g');
 hLsc_2 = [];
-hRs0_3 = plot(hAxes(2,3), freqs, Robs(:,3), 'Color', 'g');
+hRs0_3 = plot(hAxes(2,3), freqsR, Robs(:,3), 'Color', 'g');
 hRsc_3 = [];
-hLs0_3 = plot(hAxes(3,3), freqs, Lobs(:,3), 'Color', 'g');
+hLs0_3 = plot(hAxes(3,3), freqsL, Lobs(:,3), 'Color', 'g');
 hLsc_3 = [];
 drawnow
 
@@ -154,8 +154,8 @@ for l=1:3
         pFLLeftW = gstMapMult(pFLLeftW, diagrH(k,:), diagrV(k,:), gridstep, posLcalc(k,l));
         scanR = gstMapConv(pFRightW, diagrH(k,:), diagrV(k,:), gridstep);
         scanL = gstMapConv(pFLeftW, diagrH(k,:), diagrV(k,:), gridstep);
-        Rcalc(k,l) = scanR(Points(l));
-        Lcalc(k,l) = scanL(Points(l));
+        Rcalc(k,l) = scanR(Points(1,l));
+        Lcalc(k,l) = scanL(Points(2,l));
                  
         for i= 1:size(pFRightW, 1)
             for j = 1:size(pFRightW, 2)
@@ -180,7 +180,15 @@ for l=1:3
         HLm(k,:,l) = HLm(k,:,l)./cntL(k,:,l);
     end
 end
-   
+
+Rcalc((length(freqsR)+1):end,:) = [];
+R((length(freqsR)+1):end,:,:,:) = [];
+Lcalc((length(freqsL)+1):end,:) = [];
+L((length(freqsL)+1):end,:,:,:) = []; 
+
+Rcalc = Rcalc + RB;
+Lcalc = Lcalc + LB;
+                    
     devR=(Robs-Rcalc).^2;
     devL=(Lobs-Lcalc).^2;
     resR = sqrt(sum(sum(devR)));
@@ -220,12 +228,12 @@ end
         [hT0_1, hTc_1] = l_updatePlot(hAxes(1, 1), hT0_1, hTc_1, H0, T0(1,:), Hcalc, Tcalc(1,:), 'm');
         [hT0_2, hTc_2] = l_updatePlot(hAxes(1, 2), hT0_2, hTc_2, H0, T0(2,:), Hcalc, Tcalc(2,:), 'm');
     end
-    [hRs0_1, hRsc_1] = l_updatePlot(hAxes(2, 1), hRs0_1, hRsc_1, freqs, Robs(:,1), freqs, Rcalc(:,1), 'r');
-    [hLs0_1, hLsc_1] = l_updatePlot(hAxes(3, 1), hLs0_1, hLsc_1, freqs, Lobs(:,1), freqs, Lcalc(:,1), 'b');
-    [hRs0_2, hRsc_2] = l_updatePlot(hAxes(2, 2), hRs0_2, hRsc_2, freqs, Robs(:,2), freqs, Rcalc(:,2), 'r');
-    [hLs0_2, hLsc_2] = l_updatePlot(hAxes(3, 2), hLs0_2, hLsc_2, freqs, Lobs(:,2), freqs, Lcalc(:,2), 'b');
-    [hRs0_3, hRsc_3] = l_updatePlot(hAxes(2, 3), hRs0_3, hRsc_3, freqs, Robs(:,3), freqs, Rcalc(:,3), 'r');
-    [hLs0_3, hLsc_3] = l_updatePlot(hAxes(3, 3), hLs0_3, hLsc_3, freqs, Lobs(:,3), freqs, Lcalc(:,3), 'b');
+    [hRs0_1, hRsc_1] = l_updatePlot(hAxes(2, 1), hRs0_1, hRsc_1, freqsR, Robs(:,1), freqsR, Rcalc(:,1), 'r');
+    [hLs0_1, hLsc_1] = l_updatePlot(hAxes(3, 1), hLs0_1, hLsc_1, freqsL, Lobs(:,1), freqsL, Lcalc(:,1), 'b');
+    [hRs0_2, hRsc_2] = l_updatePlot(hAxes(2, 2), hRs0_2, hRsc_2, freqsR, Robs(:,2), freqsR, Rcalc(:,2), 'r');
+    [hLs0_2, hLsc_2] = l_updatePlot(hAxes(3, 2), hLs0_2, hLsc_2, freqsL, Lobs(:,2), freqsL, Lcalc(:,2), 'b');
+    [hRs0_3, hRsc_3] = l_updatePlot(hAxes(2, 3), hRs0_3, hRsc_3, freqsR, Robs(:,3), freqsR, Rcalc(:,3), 'r');
+    [hLs0_3, hLsc_3] = l_updatePlot(hAxes(3, 3), hLs0_3, hLsc_3, freqsL, Lobs(:,3), freqsL, Lcalc(:,3), 'b');
     lr = length(resRv);
     if lr > 1
         plot(hAxes(1,3), [lr-1 lr], resRv(end-1:end), 'Color', 'r')
@@ -241,14 +249,14 @@ end
     Rcalc = [Rcalc(:,1); Rcalc(:,2); Rcalc(:,3)];
     Lcalc = [Lcalc(:,1); Lcalc(:,2); Lcalc(:,3)];
     
-    inclR = true(1, 3*length(freqs));
-    for i = 1:3*length(freqs)
+    inclR = true(1, 3*length(freqsR));
+    for i = 1:3*length(freqsR)
         if all(R(i, :) == 0)
             inclR(i) = false;
         end
     end
-    inclL = true(1, 3*length(freqs));
-    for i = 1:3*length(freqs)
+    inclL = true(1, 3*length(freqsL));
+    for i = 1:3*length(freqsL)
         if all(L(i, :) == 0)
             inclL(i) = false;
         end
@@ -311,8 +319,8 @@ end
 
     relax = param.relax;
     
-    Robs=[Robs(1:length(freqs)),Robs(length(freqs)+1:2*length(freqs)),Robs(2*length(freqs)+1:3*length(freqs))];
-    Lobs=[Lobs(1:length(freqs)),Lobs(length(freqs)+1:2*length(freqs)),Lobs(2*length(freqs)+1:3*length(freqs))];
+    Robs=[Robs(1:length(freqsR)),Robs(length(freqsR)+1:2*length(freqsR)),Robs(2*length(freqsR)+1:3*length(freqsR))];
+    Lobs=[Lobs(1:length(freqsL)),Lobs(length(freqsL)+1:2*length(freqsL)),Lobs(2*length(freqsL)+1:3*length(freqsL))];
     %Robs=[Robs(1:71),Robs(72:142),Robs(143:213)];
     %Lobs=[Lobs(1:71),Lobs(72:142),Lobs(143:213)];
 end
@@ -323,6 +331,7 @@ end
 %     else
 %         relax = relax0;
 %     end
+save('T_12470.mat','Tcalc');
 end
 
 

@@ -1,4 +1,4 @@
-function reoIterationCore1Point2RegionV2(hLib, mfoData, Mmap, freqs, Robs, Lobs, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, Mask, param, diagrH, diagrV, gridstep)
+function reoIterationCore1Point2RegionV2(hLib, mfoData, Mmap, freqs, freqsR, freqsL, Robs, Lobs, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, Mask, param, diagrH, diagrV, gridstep)
 
 nNT = 1;
 NT = NTv(nNT);
@@ -53,9 +53,9 @@ set(hAxes(1,3), 'YScale', 'log')
 set(hAxes,'Fontsize',16)
 hTc_1 = [];
 hTc_2 = [];
-hRs0 = plot(hAxes(2,1), freqs, Robs, 'Color', 'g');
+hRs0 = plot(hAxes(2,1), freqsR, Robs, 'Color', 'g');
 hRsc = [];
-hLs0 = plot(hAxes(2,2), freqs, Lobs, 'Color', 'g');
+hLs0 = plot(hAxes(2,2), freqsL, Lobs, 'Color', 'g');
 hLsc = [];
 drawnow
 
@@ -156,6 +156,11 @@ while true
         HRm(k,:) = HRm(k,:)./cntR(k,:);
         HLm(k,:) = HLm(k,:)./cntL(k,:);
     end
+
+Rcalc((length(freqsR)+1):end) = [];
+R((length(freqsR)+1):end,:,:) = [];
+Lcalc((length(freqsL)+1):end) = [];
+L((length(freqsL)+1):end,:,:) = []; 
     
     resR = sqrt(sum((Robs-Rcalc).^2));
     resRrel = resR/sum(Robs);
@@ -194,8 +199,8 @@ while true
         [hT0_1, hTc_1] = l_updatePlot(hAxes(1, 1), hT0_1, hTc_1, H0, T0(1,:), Hcalc, Tcalc(1,:), 'm');
         [hT0_2, hTc_2] = l_updatePlot(hAxes(1, 2), hT0_2, hTc_2, H0, T0(2,:), Hcalc, Tcalc(2,:), 'm');
     end
-    [hRs0, hRsc] = l_updatePlot(hAxes(2, 1), hRs0, hRsc, freqs, Robs, freqs, Rcalc, 'r');
-    [hLs0, hLsc] = l_updatePlot(hAxes(2, 2), hLs0, hLsc, freqs, Lobs, freqs, Lcalc, 'b');
+    [hRs0, hRsc] = l_updatePlot(hAxes(2, 1), hRs0, hRsc, freqsR, Robs, freqsR, Rcalc, 'r');
+    [hLs0, hLsc] = l_updatePlot(hAxes(2, 2), hLs0, hLsc, freqsL, Lobs, freqsL, Lcalc, 'b');
     lr = length(resRv);
     if lr > 1
         plot(hAxes(1,3), [lr-1 lr], resRv(end-1:end), 'Color', 'r')
@@ -207,14 +212,14 @@ while true
     R = [R(:, :, 1) R(:, :, 2)];
     L = [L(:, :, 1) L(:, :, 2)];
     
-    inclR = true(1, length(freqs));
-    for i = 1:length(freqs)
+    inclR = true(1, length(freqsR));
+    for i = 1:length(freqsR)
         if all(R(i, :) == 0)
             inclR(i) = false;
         end
     end
-    inclL = true(1, length(freqs));
-    for i = 1:length(freqs)
+    inclL = true(1, length(freqsR));
+    for i = 1:length(freqsR)
         if all(L(i, :) == 0)
             inclL(i) = false;
         end
