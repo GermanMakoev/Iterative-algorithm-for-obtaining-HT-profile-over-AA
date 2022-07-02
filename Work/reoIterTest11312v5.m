@@ -54,7 +54,7 @@ step=[2 2];
 [M, base, Bc] = reoSetField(hLib, mfoData, step);
 %Mask = mfoData.mask-5;
 load('Mask11312.mat','Mask');
-[diagrH, diagrV] =  mfoCreateRATANDiagrams(freqs, M, step, base, 3);
+[diagrH, diagrV] =  mfoCreateRATANDiagrams(freqs, M, step, base, 0, 0.009, 8.338);
 
 % данные РАТАН содержат позицию точек скана (в угл. сек.), поэтому позицию
 % точки скана по горизонтали в терминах размеченного поля можно получить
@@ -77,8 +77,11 @@ Ht2 = [1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5
 %Ht1 = [1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 8 10  12 15 20 25]*1e8;
 %Ht2 = [1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5.2 5.7 6.5 10 12 15 17 20 25 30]*1e8;
 Hc = (Ht1+Ht2)/2;
-Tc = 1e6*ones(2, length(Hc));
-Tc(2,1:3) = 6000;
+%Tc = 1e6*ones(2, length(Hc));
+Tc = load('T_11312.mat','T_11312');
+Tc = Tc.T_11312;
+Tc = Tc(:, 3:length(Tc));
+%Tc(2,1:3) = 6000;
 Tb = [6000, 6000; 6000, 6000];
 
 %Hb = [1.2e8, 1.3e8];
@@ -89,7 +92,10 @@ NT = 1e16;
 param = reoGetParam;
 param.wTemp = 500;
 param.wL = 0.2;
-param.rescntmax = 30;
+param.mode = 0;
+param.b = 8.338;
+param.c = 0.009;
+param.rescntmax = 1;
 
 %Тормозное излучение
 load('Fontenla2009.mat','f2009');

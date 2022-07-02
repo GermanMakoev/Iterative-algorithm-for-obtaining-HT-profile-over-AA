@@ -20,8 +20,10 @@ M = reoSetField(hLib, mfoData, gridstep);
 
 %--- model ----------------------------------------------------------
 freqs = (3:0.3:18)*1e9;
-NT = 3e15;
-NoiseLevel=0.1;
+%NT = 3e15;
+NT = 8e15;
+%NoiseLevel=0.1;
+NoiseLevel=0;
 Noise=NoiseLevel*randn(length(freqs),1);
 
 H0 = [1, 1.4e8, 1.6e8, 5e8, 2e10];
@@ -54,9 +56,10 @@ Tb = 10000;
 Hb = 1.2e8;
 
 param = reoGetParam;
-param.wTemp = 0.3;
-param.rescntmax = 30;
-reoIterationCore(hLib, mfoData, M, freqs, Robs, Lobs, H0, Temp0, Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, param);
+param.wTemp = 0.4;
+%param.wTemp = 1.2;
+param.rescntmax = 70;
+reoIterationCore1Point1Region(hLib, mfoData, M, freqs, Robs, Lobs, H0, Temp0, Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, param);
 
 utilsFreeLibrary(hLib);
 

@@ -64,11 +64,16 @@ Tc = 1e6*ones(1, length(Hc));
 Tb = 6000;
 Hb = 0.8e8;
 
+load('RB.mat','RB');
+load('LB.mat','LB');
+RB = transpose(RB);
+LB = transpose(LB);
+
 param = reoGetParam;
 param.wTemp = 500;
 %param.wL = 0.2;
 param.rescntmax = 30;
-reoIterationCore1of3Point1Region(hLib, mfoData, M, freqs, Robs, Lobs, [], [], Hb, Tb, Ht1, Ht2, Hc, Tc, 1e16, posR, posL, param);
+reoIterationCore1of3Point1Region(hLib, mfoData, M, freqs, Robs, Lobs, RB, LB, [], [], Hb, Tb, Ht1, Ht2, Hc, Tc, 1e16, posR, posL, param);
 utilsFreeLibrary(hLib);
 end
 

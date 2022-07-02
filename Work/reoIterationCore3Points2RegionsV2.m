@@ -111,6 +111,8 @@ while true
     HLm = zeros(length(freqs), length(Hc), nModels, 3);
     
 for l=1:3
+    scanRs = [];
+    scanLs = [];
     for k = 1:length(freqs)
         depthRightW = zeros(Mmap);
         pFRightW = zeros(Mmap);
@@ -154,6 +156,8 @@ for l=1:3
         pFLLeftW = gstMapMult(pFLLeftW, diagrH(k,:), diagrV(k,:), gridstep, posLcalc(k,l));
         scanR = gstMapConv(pFRightW, diagrH(k,:), diagrV(k,:), gridstep);
         scanL = gstMapConv(pFLeftW, diagrH(k,:), diagrV(k,:), gridstep);
+        scanRs = [scanRs;scanR];
+        scanLs = [scanLs;scanL];
         Rcalc(k,l) = scanR(Points(1,l));
         Lcalc(k,l) = scanL(Points(2,l));
                  
@@ -179,6 +183,8 @@ for l=1:3
         HRm(k,:,l) = HRm(k,:,l)./cntR(k,:,l);
         HLm(k,:,l) = HLm(k,:,l)./cntL(k,:,l);
     end
+    save(['scanR.mat'],'scanRs');
+    save(['scanL.mat'],'scanLs');
 end
 
 Rcalc((length(freqsR)+1):end,:) = [];
@@ -331,7 +337,7 @@ end
 %     else
 %         relax = relax0;
 %     end
-save('T_12470.mat','Tcalc');
+%save('T_12419.mat','Tcalc');
 end
 
 

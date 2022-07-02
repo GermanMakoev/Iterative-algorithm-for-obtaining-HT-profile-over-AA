@@ -1,4 +1,4 @@
-function reoIterationCore3oints2Regions(hLib, mfoData, Mmap, freqs, Robs, Lobs, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, Mask, param, diagrH, diagrV, gridstep)
+function reoIterationCore(hLib, mfoData, Mmap, freqs, Robs, Lobs, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, param, diagrH, diagrV, gridstep)
 
 nNT = 1;
 NT = NTv(nNT);

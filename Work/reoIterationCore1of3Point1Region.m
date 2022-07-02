@@ -1,4 +1,4 @@
-function reoIterationCore1of3Point1Region(hLib, mfoData, Mmap, freqs, Robs, Lobs, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, param)
+function reoIterationCore1of3Point1Region(hLib, mfoData, Mmap, freqs, Robs, Lobs, RB, LB, H0, T0, Hb, Tb, Ht1, Ht2, Hc, Tc, NTv, posR, posL, param)
 
 nNT = 1;
 NT = NTv(nNT);
@@ -92,6 +92,9 @@ while true
         HLm(k,:) = HLm(k,:)./cntL(k,:);
     end
     
+Rcalc = Rcalc + RB;
+Lcalc = Lcalc + LB;
+
     resR = sqrt(sum((Robs-Rcalc).^2));
     resRrel = resR/sum(Robs);
     resL = sqrt(sum((Lobs-Lcalc).^2));

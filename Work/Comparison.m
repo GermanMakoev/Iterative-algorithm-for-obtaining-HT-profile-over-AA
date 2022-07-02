@@ -67,3 +67,12 @@ plot(B,NB);
 title('Зависимость невязки от магнитного поля')
 xlabel('B/B_{0}')
 ylabel('Невязка,%')
+%%
+Tcalc = load('T_12419.mat','Tcalc');
+load('Hcalc.mat','Hcalc');
+plot(Hcalc,Tcalc.Tcalc(1,:));
+hold on;
+plot(Hcalc,Tcalc.Tcalc(2,:));
+title('ТВП, 12419')
+xlabel('Высота, см')
+ylabel('Поток, с.е.п./угл.с.')

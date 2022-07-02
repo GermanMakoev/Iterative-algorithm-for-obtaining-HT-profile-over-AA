@@ -21,7 +21,7 @@ M = reoSetField(hLib, mfoData, gridstep);
 
 %--- model ----------------------------------------------------------
 freqs = (3:0.3:18)*1e9;
-NT = 6e15;
+NT = 3e15;
 
 H0 = [1, 1.4e8, 1.6e8, 5e8, 2e10];
 Temp0 = [1e4, 1e4, 1e6, 2e6, 2e6];
@@ -57,16 +57,16 @@ Hb = 1.2e8;
 
 %Увеличение поля
 %FF=0.75;
-FF = 0.2;
-mfoData.B.x=mfoData.B.x*(1+FF);
-mfoData.B.y=mfoData.B.y*(1+FF);
-mfoData.B.z=mfoData.B.z*(1+FF);
-M = reoSetField(hLib, mfoData, gridstep);
+%FF = 0;
+%mfoData.B.x=mfoData.B.x*(1+FF);
+%mfoData.B.y=mfoData.B.y*(1+FF);
+%mfoData.B.z=mfoData.B.z*(1+FF);
+%M = reoSetField(hLib, mfoData, gridstep);
 
 param = reoGetParam;
-%param.wTemp = 0.2;
-param.wTemp = 20;
-param.rescntmax = 30;
+%param.wTemp = 7;
+param.wTemp = 0.3;
+param.rescntmax = 70;
 %NT = 6e15;
 reoIterationCore1Point1Region(hLib, mfoData, M, freqs, Robs, Lobs, H0, Temp0, Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, param);
 

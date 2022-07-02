@@ -54,8 +54,8 @@ step=[2 2];
 [M, base, Bc] = reoSetField(hLib, mfoData, step);
 %Mask = mfoData.mask-5;
 load('Mask12794.mat','Mask');
-[diagrH, diagrV] =  mfoCreateRATANDiagrams(freqs, M, step, base, 3);
-
+%[diagrH, diagrV] =  mfoCreateRATANDiagrams(freqs, M, step, base, 3);
+[diagrH, diagrV] =  mfoCreateRATANDiagrams(freqs, M, step, base, 0, 0.009, 8.338);
 % данные РАТАН содержат позицию точек скана (в угл. сек.), поэтому позицию
 % точки скана по горизонтали в терминах размеченного поля можно получить
 % следующим образом:
@@ -72,12 +72,15 @@ end
 % следующем этапе.
 
 %-----------------------------------------------------------------------
-%Ht1 = [0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 10 15 20 25]*1e8;
-%Ht2 = [1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5.2 5.7 6.5 10 15 20 25 30]*1e8;
-Ht1 = [0.8 1.0 1.2 1.4 1.6 1.8 2.1 2.4 2.7 3.0 3.7 4.5 5.2  6 10 14 18 25]*1e8;
-Ht2 = [1.0 1.2 1.4 1.6 1.8 2.1 2.4 2.7 3.0 3.7 4.5 5.2 6.0 10 14 18 22 30]*1e8;
+Ht1 = [0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 10 15 20 25]*1e8;
+Ht2 = [1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5.2 5.7 6.5 10 15 20 25 30]*1e8;
+%Ht1 = [0.8 1.0 1.2 1.4 1.6 1.8 2.1 2.4 2.7 3.0 3.7 4.5 5.2  6 10 14 18 25]*1e8;
+%Ht2 = [1.0 1.2 1.4 1.6 1.8 2.1 2.4 2.7 3.0 3.7 4.5 5.2 6.0 10 14 18 22 30]*1e8;
 Hc = (Ht1+Ht2)/2;
-Tc = 1e6*ones(2, length(Hc));
+%Tc = 1e6*ones(2, length(Hc));
+Tc = load('T_12794.mat','T_12794');
+Tc = Tc.T_12794;
+Tc = Tc(:, 3:length(Tc));
 Tb = [6000, 6000; 6000, 6000];
 
 %Hb = [1.2e8, 1.3e8];
@@ -88,7 +91,10 @@ NT = 1e16;
 param = reoGetParam;
 param.wTemp = 1000;
 param.wL = 0.2;
-param.rescntmax = 30;
+param.mode = 0;
+param.b = 8.338;
+param.c = 0.009;
+param.rescntmax = 1;
 
 %Тормозное излучение
 load('Fontenla2009.mat','f2009');
@@ -99,6 +105,8 @@ DB= f2009.profs(5).NNE;
 RB = zeros(length(freqs),3);
 LB = zeros(length(freqs),3);
 for l=1:3
+    scanRBs = [];
+    scanLBs = [];
 for k = 1:length(freqs)
         pFRightW = zeros(M);
         pFLeftW = zeros(M);
@@ -109,9 +117,13 @@ for k = 1:length(freqs)
             pFLeftW(Mask == 5) = pFLeft(Mask == 5);    
         scanRB = gstMapConv(pFRightW, diagrH(k,:), diagrV(k,:), step);
         scanLB = gstMapConv(pFLeftW, diagrH(k,:), diagrV(k,:), step);
+        scanRBs = [scanRBs;scanRB];
+        scanLBs = [scanLBs;scanLB];
         RB(k,l) = scanRB(Points(1,l));
         LB(k,l) = scanLB(Points(2,l));
 end
+    save(['scanRB.mat'],'scanRBs');
+    save(['scanLB.mat'],'scanLBs');
 end
 
 for l=1:3

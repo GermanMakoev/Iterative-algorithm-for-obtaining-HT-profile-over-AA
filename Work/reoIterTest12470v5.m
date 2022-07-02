@@ -77,7 +77,10 @@ Ht2 = [1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5
 %Ht1 = [1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 8 10  12 15 20 25]*1e8;
 %Ht2 = [1.6 1.7 1.8 1.9 2.0 2.1 2.3 2.5 2.7 2.9 3.1 3.7 4.2 4.7 5.2 5.7 6.5 10 12 15 17 20 25 30]*1e8;
 Hc = (Ht1+Ht2)/2;
-Tc = 1e6*ones(2, length(Hc));
+%Tc = 1e6*ones(2, length(Hc));
+Tc = load('T_12470.mat','T_12470');
+Tc = Tc.T_12470;
+Tc = Tc(:, 3:length(Tc));
 Tb = [6000, 6000; 6000, 6000];
 
 %Hb = [1.2e8, 1.3e8];
@@ -85,10 +88,16 @@ Hb = [0.8e8, 0.9e8];
 %NT = [1e15, 2e15, 3e15, 4e15, 5e15, 1e16, 2e16, 5e16];
 NT = 1e16;
 
+Hcalc = [Hb Hc];
+save('Hcalc.mat','Hcalc');
+
 param = reoGetParam;
 param.wTemp = 1500;
 param.wL = 0.2;
-param.rescntmax = 30;
+param.mode = 0;
+param.b = 8.338;
+param.c = 0.009;
+param.rescntmax = 1;
 
 %Тормозное излучение
 load('Fontenla2009.mat','f2009');
@@ -99,6 +108,8 @@ DB= f2009.profs(5).NNE;
 RB = zeros(length(freqs),3);
 LB = zeros(length(freqs),3);
 for l=1:3
+    scanRBs = [];
+    scanLBs = [];
 for k = 1:length(freqs)
         pFRightW = zeros(M);
         pFLeftW = zeros(M);
@@ -109,9 +120,13 @@ for k = 1:length(freqs)
             pFLeftW(Mask == 5) = pFLeft(Mask == 5);    
         scanRB = gstMapConv(pFRightW, diagrH(k,:), diagrV(k,:), step);
         scanLB = gstMapConv(pFLeftW, diagrH(k,:), diagrV(k,:), step);
+        scanRBs = [scanRBs;scanRB];
+        scanLBs = [scanLBs;scanLB];
         RB(k,l) = scanRB(Points(1,l));
         LB(k,l) = scanLB(Points(2,l));
 end
+    save(['scanRB.mat'],'scanRBs');
+    save(['scanLB.mat'],'scanLBs');
 end
 
 for l=1:3
@@ -170,6 +185,17 @@ end
 
 Mask = Mask-5;
 Mask(Mask<0)=0;
+
+%subplot(2, 1, 1), plot(freqsR, RB(:,1))
+%hold on;
+%plot(freqsR, RB(:,2))
+%hold on;
+%plot(freqsR, RB(:,3))
+%subplot(2, 1, 2), plot(freqsL, LB(:,1))
+%hold on;
+%plot(freqsL, LB(:,2))
+%hold on;
+%plot(freqsL, LB(:,3))
 
 reoIterationCore3Points2RegionsV2(hLib, mfoData, M, freqs, freqsR, freqsL , Robs, Lobs, RB, LB, [], [], Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, Mask, param, diagrH, diagrV, step, Points);
 utilsFreeLibrary(hLib);
