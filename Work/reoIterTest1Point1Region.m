@@ -18,16 +18,18 @@ mfoData.posangle = 0;
 mfoData.vcos = [0; 0; 1];
 M = reoSetField(hLib, mfoData, gridstep);
 
-
 %--- model ----------------------------------------------------------
 freqs = (3:0.3:18)*1e9;
-NT = 3e15;
+%NT = 3e15;
+NT = 8e15;
+%NoiseLevel=0.1;
+%NoiseLevel=0;
+%Noise=NoiseLevel*randn(length(freqs),1);
 
 H0 = [1, 1.4e8, 1.6e8, 5e8, 2e10];
-Temp0 = [1e4, 1e4, 1e6, 2e6, 2e6];
+Temp0 = [1e4, 1e4, 2e6, 5e6, 5e6];
 Dens0 = NT./Temp0;
-save('H0.mat','H0');
-save('Temp0.mat','Temp0');
+
 Robs = zeros(1,length(freqs));
 Lobs = zeros(1,length(freqs));
 posR = zeros(1,length(freqs));
@@ -39,12 +41,10 @@ for k = 1:length(freqs)
              reoCalculate(hLib, mfoData, H0, Temp0, Dens0, M, freqs(k), 2:4, 25, 3);
     [Robs(k), posR(k)] = max(pScanRight);
     [Lobs(k), posL(k)] = max(pScanLeft);
-    
+     %Robs(k) = Robs(k)*(1+Noise(k));
+     %Lobs(k) = Lobs(k)*(1+Noise(k));
 end
 
-%freqs(51:end) = [];
-%Robs(51:end) = [];
-%Lobs(51:end) = [];
 %--------------------------------------------------------------------------
 
 Ht1 = [1.1 1.2 1.3 1.4 1.5 1.6 1.8 2.0 2.2 2.4 2.6 2.8 3.0 3.5 4.0 4.5 5.0 5.5  6 10 15]*1e8;
@@ -55,19 +55,10 @@ Tc = 1e6*ones(1, length(Hc));
 Tb = 10000;
 Hb = 1.2e8;
 
-%Увеличение поля
-%FF=0.75;
-%FF = 0;
-%mfoData.B.x=mfoData.B.x*(1+FF);
-%mfoData.B.y=mfoData.B.y*(1+FF);
-%mfoData.B.z=mfoData.B.z*(1+FF);
-%M = reoSetField(hLib, mfoData, gridstep);
-
 param = reoGetParam;
-%param.wTemp = 7;
-param.wTemp = 0.3;
+param.wTemp = 0.4;
+%param.wTemp = 1.2;
 param.rescntmax = 70;
-%NT = 6e15;
 reoIterationCore1Point1Region(hLib, mfoData, M, freqs, Robs, Lobs, H0, Temp0, Hb, Tb, Ht1, Ht2, Hc, Tc, NT, posR, posL, param);
 
 utilsFreeLibrary(hLib);

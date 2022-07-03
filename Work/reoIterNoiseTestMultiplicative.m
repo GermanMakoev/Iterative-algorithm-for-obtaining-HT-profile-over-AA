@@ -23,8 +23,8 @@ freqs = (3:0.3:18)*1e9;
 %NT = 3e15;
 NT = 8e15;
 %NoiseLevel=0.1;
-NoiseLevel=0;
-Noise=NoiseLevel*randn(length(freqs),1);
+%NoiseLevel=0;
+%Noise=NoiseLevel*randn(length(freqs),1);
 
 H0 = [1, 1.4e8, 1.6e8, 5e8, 2e10];
 Temp0 = [1e4, 1e4, 2e6, 5e6, 5e6];
@@ -41,8 +41,8 @@ for k = 1:length(freqs)
              reoCalculate(hLib, mfoData, H0, Temp0, Dens0, M, freqs(k), 2:4, 25, 3);
     [Robs(k), posR(k)] = max(pScanRight);
     [Lobs(k), posL(k)] = max(pScanLeft);
-     Robs(k) = Robs(k)*(1+Noise(k));
-     Lobs(k) = Lobs(k)*(1+Noise(k));
+     %Robs(k) = Robs(k)*(1+Noise(k));
+     %Lobs(k) = Lobs(k)*(1+Noise(k));
 end
 
 %--------------------------------------------------------------------------
